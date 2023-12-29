@@ -3,8 +3,15 @@
   hosts: all
   become: yes
   tasks:
-    - name: java 11 installation
+    - name: install java 11
       ansible.builtin.apt:
         name: openjdk-11-jdk
         update_cache: yes
         state: present
+    - name: create tomcat user
+      ansible.builtin.user:
+        name: tomcat
+        create_home: yes
+        group: tomcat
+        home: /opt/tomcat
+        shell: /bin/false
