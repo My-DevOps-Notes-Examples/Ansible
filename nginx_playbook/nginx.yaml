@@ -1,0 +1,10 @@
+---
+- name: nginx installation
+  hosts: all
+  become: yes
+  tasks:
+    - name: nginx installation on ubuntu
+      ansible.builtin.apt:
+        name: nginx
+        update_cache: yes
+        state: present
