@@ -1,0 +1,10 @@
+---
+- name: apache installation on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: apache installation
+      ansible.builtin.apt:
+        name: apache2
+        update-cache: yes
+        state: present
