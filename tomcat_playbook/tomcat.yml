@@ -30,3 +30,9 @@
         src: /opt/tomcat/apache-tomcat-10.1.17
         path: /opt/tomcat/latest
         state: link
+    - name: change ownership
+      ansible.builtin.file:
+        path: /opt/tomcat
+        owner: tomcat
+        group: tomcat
+        recurse: yes
