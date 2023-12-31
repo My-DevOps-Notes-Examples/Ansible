@@ -2,73 +2,82 @@
 - name: tomcat 10 installation on ubuntu 2204
   hosts: all
   become: yes
+  vars:
+    java_name: openjdk-11-jdk
+    user_name: tomcat
+    group_name: tomcat
+    user_home: /opt/tomcat
+    user_shell: /bin/false
+    tomcat_version: "10.1.17"
+    tomcat_major_version: "10"
+    tomcat_service_name: tomcat.service
   tasks:
-    - name: install java 11
+    - name: install java
       ansible.builtin.apt:
-        name: openjdk-11-jdk
+        name: "{{ java_name }}"
         update_cache: yes
         state: present
-    - name: create tomcat group
+    - name: create group
       ansible.builtin.group:
-        name: tomcat
+        name: "{{ group_name }}"
         state: present
-    - name: create tomcat user
+    - name: create user
       ansible.builtin.user:
-        name: tomcat
+        name: "{{ user_name }}"
         create_home: yes
-        group: tomcat
-        home: /opt/tomcat
-        shell: /bin/false
+        group: "{{ group_name }}"
+        home: "{{ user_home }}"
+        shell: "{{ user_shell }}"
         state: present
     - name: download and extract tomcat
       ansible.builtin.unarchive:
-        src: https://www-eu.apache.org/dist/tomcat/tomcat-10/v10.1.17/bin/apache-tomcat-10.1.17.tar.gz
+        src: "https://www-eu.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
         remote_src: yes
-        dest: /opt/tomcat/
+        dest: "{{ user_home }}"
     - name: create symbolic link
       ansible.builtin.file:
-        src: /opt/tomcat/apache-tomcat-10.1.17
-        path: /opt/tomcat/latest
+        src: "{{ user_home }}/apache-tomcat-{{ tomcat_version }}"
+        path: "{{ user_home }}/latest"
         state: link
     - name: change ownership
       ansible.builtin.file:
-        path: /opt/tomcat
-        owner: tomcat
-        group: tomcat
+        path: "{{ user_home }}"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
         recurse: yes
     - name: provide executable permissions to shell script
-      ansible.builtin.command: sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+      ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"
     - name: create systemd unit file
       ansible.builtin.copy:
-        src: tomcat.service
-        dest: /etc/systemd/system/tomcat.service
-        owner: tomcat
-        group: tomcat
+        src: "{{ tomcat_service_name }}"
+        dest: "/etc/systemd/system/{{ tomcat_service_name }}"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
     - name: do system daemon-reload, enable and start tomcat
       ansible.builtin.systemd_service:
-        name: tomcat.service
+        name: "{{ tomcat_service_name }}"
         daemon-reload: yes
         enabled: yes
         state: started
     - name: copy the tomcat users
       ansible.builtin.copy:
         src: tomcat-users.xml
-        dest: /opt/tomcat/latest/conf/tomcat-users.xml
-        owner: tomcat
-        group: tomcat
+        dest: "{{ user_home }}/latest/conf/tomcat-users.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
     - name: copy the manager context
       ansible.builtin.copy:
         src: manager-context.xml
-        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml
-        owner: tomcat
-        group: tomcat
+        dest: "{{ user_home }}/latest/webapps/manager/META-INF/context.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
     - name: copy the hostmanager context
       ansible.builtin.copy:
         src: hostmanager-context.xml
-        dest: /opt/tomcat/latest/webapps/host-manager/META-INF/context.xml
-        owner: tomcat
-        group: tomcat
+        dest: "{{ user_home }}/latest/webapps/host-manager/META-INF/context.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
     - name: restart the tomcat
       ansible.builtin.systemd_service:
-        name: tomcat.service
+        name: "{{ tomcat_service_name }}"
         state: restarted
