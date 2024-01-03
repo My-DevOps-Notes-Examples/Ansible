@@ -19,11 +19,16 @@
         home: "{{ user_home }}"
         shell: "{{ user_shell }}"
         state: present
+    - name: get tomcat state
+      ansible.builtin.stat:
+        path: "{{ user_home }}/apache-tomcat-{{ tomcat_version }}"
+      register: tomcat_startup
     - name: download and extract tomcat
       ansible.builtin.unarchive:
         src: "https://www-eu.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
         remote_src: yes
         dest: "{{ user_home }}"
+      when: not tomcat_startup.stat.exists
     - name: create symbolic link
       ansible.builtin.file:
         src: "{{ user_home }}/apache-tomcat-{{ tomcat_version }}"
