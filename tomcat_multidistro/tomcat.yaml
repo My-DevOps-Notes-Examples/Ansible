@@ -37,3 +37,17 @@
         recurse: yes
     - name: provide executable permissions to shell script
       ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"
+    - name: create systemd unit file in centos
+      ansible.builtin.copy:
+        src: "centos-{{ tomcat_service_name }}"
+        dest: "/etc/systemd/system/{{ tomcat_service_name }}"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: create systemd unit file in centos
+      ansible.builtin.copy:
+        src: "ubuntu-{{ tomcat_service_name }}"
+        dest: "/etc/systemd/system/{{ tomcat_service_name }}"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: ansible_facts['distribution'] == "Ubuntu"
