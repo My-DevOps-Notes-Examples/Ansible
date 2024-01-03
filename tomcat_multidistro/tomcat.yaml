@@ -42,6 +42,7 @@
         recurse: yes
     - name: provide executable permissions to shell script
       ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"
+      when: not tomcat_startup.stat.exists
     - name: create systemd unit file in centos
       ansible.builtin.copy:
         src: "centos-{{ tomcat_service_name }}"
