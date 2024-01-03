@@ -51,3 +51,9 @@
         owner: "{{ user_name }}"
         group: "{{ group_name }}"
       when: ansible_facts['distribution'] == "Ubuntu"
+    - name: do system daemon-reload, enable and start tomcat
+      ansible.builtin.systemd_service:
+        name: "{{ tomcat_service_name }}"
+        daemon-reload: yes
+        enabled: yes
+        state: started
