@@ -1,0 +1,59 @@
+---
+- name: install lamp stack
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: install apache2 on ubuntu
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: install httpd on centos
+      ansible.builtin.dnf:
+        name: httpd
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: install php modules on ubuntu
+      ansible.builtin.apt:
+        name:
+          - php
+          - libapache2-mod-php
+          - php-mysql
+        state: present
+      notify:
+        - restart apache2
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: install php modules on centos
+      ansible.builtin.dnf:
+        name:
+          - php
+          - php-mysqlnd
+        state: present
+      notify:
+        - restart httpd
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: copy info.php
+      ansible.builtin.copy:
+        src: info.php
+        dest: /var/www/html/info.php
+    - name: ensure apache2 running
+      ansible.builtin.systemd_service:
+        name: apache2
+        state: started
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: ensure httpd running
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: started
+      when: ansible_facts['distribution'] == "CentOS"
+  handlers:
+    - name: restart apache2
+      ansible.builtin.systemd_service:
+        name: apache2
+        state: restarted
+    - name: restart httpd
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: restarted
