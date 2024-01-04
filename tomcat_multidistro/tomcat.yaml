@@ -60,19 +60,15 @@
         owner: "{{ user_name }}"
         group: "{{ group_name }}"
       notify: restart the tomcat
-    - name: copy the manager context
+    - name: copy the context files
       ansible.builtin.copy:
-        src: manager-context.xml
-        dest: "{{ user_home }}/latest/webapps/manager/META-INF/context.xml"
+        src: context.xml
+        dest: "{{ item }}"
         owner: "{{ user_name }}"
         group: "{{ group_name }}"
-      notify: restart the tomcat
-    - name: copy the hostmanager context
-      ansible.builtin.copy:
-        src: hostmanager-context.xml
-        dest: "{{ user_home }}/latest/webapps/host-manager/META-INF/context.xml"
-        owner: "{{ user_name }}"
-        group: "{{ group_name }}"
+      loop:
+        - "{{ user_home }}/latest/webapps/manager/META-INF/context.xml"
+        - "{{ user_home }}/latest/webapps/host-manager/META-INF/context.xml"
       notify: restart the tomcat
     - name: ensure tomcat running
       ansible.builtin.systemd_service:
