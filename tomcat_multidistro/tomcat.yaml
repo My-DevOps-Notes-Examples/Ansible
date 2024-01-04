@@ -63,3 +63,25 @@
         daemon-reload: yes
         enabled: yes
         state: started
+    - name: copy the tomcat users
+      ansible.builtin.copy:
+        src: tomcat-users.xml
+        dest: "{{ user_home }}/latest/conf/tomcat-users.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+    - name: copy the manager context
+      ansible.builtin.copy:
+        src: manager-context.xml
+        dest: "{{ user_home }}/latest/webapps/manager/META-INF/context.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+    - name: copy the hostmanager context
+      ansible.builtin.copy:
+        src: hostmanager-context.xml
+        dest: "{{ user_home }}/latest/webapps/host-manager/META-INF/context.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+    - name: restart the tomcat
+      ansible.builtin.systemd_service:
+        name: "{{ tomcat_service_name }}"
+        state: restarted
