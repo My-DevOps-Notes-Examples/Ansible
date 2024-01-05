@@ -1,0 +1,2 @@
+[servers]
+172.31.29.75 packages='["git", "nano", "tree", "net-tools"]'
