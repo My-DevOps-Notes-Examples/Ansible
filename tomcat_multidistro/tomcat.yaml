@@ -35,7 +35,8 @@
         path: "{{ user_home }}/latest"
         state: link
       notify:
-        - provide executable permissions to shell script
+        - find shell files
+        - provide execution permissions to shell files
     - name: change ownership
       ansible.builtin.file:
         path: "{{ user_home }}"
@@ -71,8 +72,16 @@
         name: "{{ tomcat_service_name }}"
         state: started
   handlers:
-    - name: provide executable permissions to shell script
-      ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"
+    - name: find shell files
+      ansible.builtin.find:
+        paths: "{{ user_home }}/latest/bin/"
+        patterns: "*.sh"
+      register: sh_files
+    - name: provide execution permissions to shell files
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: u+rwx
+      loop: "{{ sh_files.files }}"
     - name: do system daemon-reload and enable
       ansible.builtin.systemd_service:
         name: "{{ tomcat_service_name }}"
