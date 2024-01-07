@@ -42,21 +42,12 @@
         owner: "{{ user_name }}"
         group: "{{ group_name }}"
         recurse: yes
-    - name: create systemd unit file in centos
-      ansible.builtin.copy:
-        src: "centos-{{ tomcat_service_name }}"
+    - name: create systemd unit file
+      ansible.builtin.template:
+        src: tomcat.service.j2
         dest: "/etc/systemd/system/{{ tomcat_service_name }}"
         owner: "{{ user_name }}"
         group: "{{ group_name }}"
-      when: ansible_facts['distribution'] == "CentOS"
-      notify: do system daemon-reload and enable
-    - name: create systemd unit file in centos
-      ansible.builtin.copy:
-        src: "ubuntu-{{ tomcat_service_name }}"
-        dest: "/etc/systemd/system/{{ tomcat_service_name }}"
-        owner: "{{ user_name }}"
-        group: "{{ group_name }}"
-      when: ansible_facts['distribution'] == "Ubuntu"
       notify: do system daemon-reload and enable
     - name: copy the tomcat users
       ansible.builtin.template:
