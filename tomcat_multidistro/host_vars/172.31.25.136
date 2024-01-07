@@ -1,2 +1,4 @@
 ---
 java_name: openjdk-11-jdk
+tomcat_user_name: Ubuntu
+tomcat_user_password: ubuntu_123

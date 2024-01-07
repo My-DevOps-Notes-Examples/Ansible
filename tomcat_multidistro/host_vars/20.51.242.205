@@ -1,2 +1,4 @@
 ---
 java_name: java-11-openjdk-devel
+tomcat_user_name: CentOS
+tomcat_user_password: centos_123

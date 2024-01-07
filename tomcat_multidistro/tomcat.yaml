@@ -59,8 +59,8 @@
       when: ansible_facts['distribution'] == "Ubuntu"
       notify: do system daemon-reload and enable
     - name: copy the tomcat users
-      ansible.builtin.copy:
-        src: tomcat-users.xml
+      ansible.builtin.template:
+        src: tomcat-users.xml.j2
         dest: "{{ user_home }}/latest/conf/tomcat-users.xml"
         owner: "{{ user_name }}"
         group: "{{ group_name }}"
