@@ -1,0 +1,6 @@
+---
+- name: install mongodb database
+  hosts: all
+  roles:
+    - role: girder.mongodb
+      become: yes
