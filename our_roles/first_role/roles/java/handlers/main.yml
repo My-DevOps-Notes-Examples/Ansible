@@ -1,0 +1,5 @@
+---
+# handlers file for java
+- name: message
+  ansible.builtin.debug:
+    msg: java is present
