@@ -1,0 +1,9 @@
+---
+# tasks file for utilities
+- name: install utilities
+  ansible.builtin.apt:
+    name: "{{ util }}"
+    update_cache: yes
+    state: present
+  notify:
+    - ensure ssh running

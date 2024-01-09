@@ -1,0 +1,6 @@
+---
+# vars file for utilities
+util:
+  - git
+  - nano
+  - tree
